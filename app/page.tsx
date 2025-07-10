@@ -3,7 +3,15 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { ReactFlow, ReactFlowProvider, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow } from "@xyflow/react";
+import {
+	ReactFlow,
+	ReactFlowProvider,
+	Background,
+	applyNodeChanges,
+	applyEdgeChanges,
+	addEdge,
+	useReactFlow,
+} from "@xyflow/react";
 import { v4 as uuid } from "uuid";
 import { useShallow } from "zustand/react/shallow";
 
@@ -102,7 +110,11 @@ function DnDFlow() {
 				<ReactFlow
 					{...{ nodes, edges, nodeTypes, onNodesChange, onEdgesChange, onConnect, onDrop, onDragOver }}
 					fitView
-				/>
+					snapToGrid
+					snapGrid={[20, 20]}
+				>
+					<Background />
+				</ReactFlow>
 			</div>
 		</>
 	);
