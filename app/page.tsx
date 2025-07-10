@@ -5,35 +5,31 @@
 import { useState, useCallback, useRef } from "react";
 import { ReactFlow, ReactFlowProvider, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow } from "@xyflow/react";
 import { v4 as uuid } from "uuid";
+import { useShallow } from "zustand/react/shallow";
 
 import "@xyflow/react/dist/style.css";
 
-import FlowToolbar from "@/components/FlowToolbar";
+import useStore, { AppNode, AppState } from "./store";
 import Sidebar from "@/components/Sidebar";
 import { DnDProvider, useDnD } from "@/components/DnDContext";
 import BaseNode from "@/components/BaseNode";
 
 const nodeTypes = { default: BaseNode, group: BaseNode };
 
-const initialNodes = [
-	{ id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" } },
-	{ id: "n2", position: { x: 0, y: 100 }, data: { label: "Node 2" } },
-];
-const initialEdges = [{ id: "n1-n2", source: "n1", target: "n2" }];
+const selector = (state: AppState) => ({
+	level: state.level,
+	nodes: state.nodes,
+	edges: state.edges,
+	onNodesChange: state.onNodesChange,
+	onEdgesChange: state.onEdgesChange,
+	onConnect: state.onConnect,
+});
 
 function DnDFlow() {
-	const [nodes, setNodes] = useState(initialNodes);
-	const [edges, setEdges] = useState(initialEdges);
-
-	const onNodesChange = useCallback(
-		(changes) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-		[],
-	);
-	const onEdgesChange = useCallback(
-		(changes) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-		[],
-	);
-	const onConnect = useCallback((params) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
+	const { level, nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(useShallow(selector)) as AppState;
+	const setLevel = useStore((state) => state.setLevel);
+	const setNodes = useStore((state) => state.setNodes);
+	const setEdges = useStore((state) => state.setEdges);
 
 	const reactFlowWrapper = useRef(null);
 	const [type, setType] = useDnD();
@@ -66,9 +62,9 @@ function DnDFlow() {
 					position.y <= n.position.y + n.measured.height,
 			);
 
-			const newNode = {
+			const newNode: AppNode = {
 				id: uuid(),
-				type,
+				type: type as unknown as string, // todo provider weird type
 				position,
 				data: { label: `${type} node` },
 				...(nodeDraggedOnTopOf && {
