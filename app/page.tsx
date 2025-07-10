@@ -11,6 +11,9 @@ import "@xyflow/react/dist/style.css";
 import FlowToolbar from "@/components/FlowToolbar";
 import Sidebar from "@/components/Sidebar";
 import { DnDProvider, useDnD } from "@/components/DnDContext";
+import BaseNode from "@/components/BaseNode";
+
+const nodeTypes = { default: BaseNode, group: BaseNode };
 
 const initialNodes = [
 	{ id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" } },
@@ -74,6 +77,8 @@ function DnDFlow() {
 					 * todo: autolayout
 					 */
 					parentId: nodeDraggedOnTopOf!.id,
+					expandParent: true, // the parent node will automatically expand if this node is dragged to the edge of the parent node’s bounds
+					// extent: "parent", // locks movement to inside of parent
 					position: { x: 0, y: 0 },
 				}),
 			};
@@ -98,7 +103,10 @@ function DnDFlow() {
 		<>
 			<Sidebar />
 			<div className="reactflow-wrapper w-screen h-screen" ref={reactFlowWrapper}>
-				<ReactFlow {...{ nodes, edges, onNodesChange, onEdgesChange, onConnect, onDrop, onDragOver }} fitView />
+				<ReactFlow
+					{...{ nodes, edges, nodeTypes, onNodesChange, onEdgesChange, onConnect, onDrop, onDragOver }}
+					fitView
+				/>
 			</div>
 		</>
 	);
