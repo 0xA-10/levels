@@ -34,13 +34,13 @@ function DnDFlow() {
 	const [type, setType] = useDnD();
 	const { screenToFlowPosition } = useReactFlow();
 
-	const onDragOver = useCallback((event: DragEvent) => {
+	const onDragOver: DragEventHandler<HTMLDivElement> = useCallback((event) => {
 		event.preventDefault();
-		event.dataTransfer!.dropEffect = "move";
-	}, []) as unknown as DragEventHandler<HTMLDivElement>;
+		event.dataTransfer.dropEffect = "move";
+	}, []);
 
-	const onDrop = useCallback(
-		(event: DragEvent) => {
+	const onDrop: DragEventHandler<HTMLDivElement> = useCallback(
+		(event) => {
 			event.preventDefault();
 
 			// check if the dropped element is valid
@@ -86,7 +86,7 @@ function DnDFlow() {
 			setNodes((nds) => nds.concat(newNode));
 		},
 		[screenToFlowPosition, type],
-	) as unknown as DragEventHandler<HTMLDivElement>;
+	);
 
 	const onDragStart = ((event: DragEvent, nodeType: string) => {
 		setType?.(nodeType);
