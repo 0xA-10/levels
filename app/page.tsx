@@ -66,7 +66,7 @@ function DnDFlow() {
 				id: uuid(),
 				type: type as unknown as string, // todo provider weird type
 				position,
-				data: { label: `${type} node` },
+				data: { label: `Node` },
 				...(nodeDraggedOnTopOf && {
 					/**
 					 * When we drag on top of another node, place it at the top left of the inside of the parent
