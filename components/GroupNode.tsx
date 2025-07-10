@@ -37,22 +37,28 @@ export default memo(({ data, id, isConnectable }: NodeProps) => {
 	const updateNodeLabel = useStore((state) => state.updateNodeLabel);
 	const setNodes = useStore((state) => state.setNodes);
 	const [isTextHovered, setIsTextHovered] = useState(false);
+	// todo: not persisting when hiding this node, move into node props
 	const [isCollapsed, setIsCollasped] = useState(false);
 
 	const expandNode = () => {
 		setIsCollasped(false);
 
-		setNodes((nds) => {
-			const descendantIdMap = new Set(getDescendantIds(nds, id));
-
-			return nds.map((n) => (descendantIdMap.has(n.id) ? { ...n, hidden: false } : n));
-		});
+		setNodes((nds) =>
+			/**
+			 * Expand (show) just the immediate children
+			 * This way we persist any nested collapsed state
+			 */
+			nds.map((n) => (n.parentId === id ? { ...n, hidden: false } : n)),
+		);
 	};
 
 	const collapseNode = () => {
 		setIsCollasped(true);
 
 		setNodes((nds) => {
+			/**
+			 * Collapse (hide) the immediate children AND all descendants
+			 */
 			const descendantIdMap = new Set(getDescendantIds(nds, id));
 
 			return nds.map((n) => (descendantIdMap.has(n.id) ? { ...n, hidden: true } : n));
