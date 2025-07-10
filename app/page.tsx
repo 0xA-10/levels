@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useRef, DragEventHandler } from "react";
-import { ReactFlow, ReactFlowProvider, Background, useReactFlow } from "@xyflow/react";
+import { type Node, ReactFlow, ReactFlowProvider, Background, useReactFlow } from "@xyflow/react";
 import { v4 as uuid } from "uuid";
 import { useShallow } from "zustand/react/shallow";
 
-import useStore, { AppNode, AppState } from "./store";
+import useStore, { AppState } from "./store";
 import Sidebar from "@/components/Sidebar";
 import { DnDProvider, useDnD } from "@/components/DnDContext";
 import BaseNode from "@/components/BaseNode";
@@ -61,7 +61,7 @@ function DnDFlow() {
 					position.y <= n.position.y + n.measured!.height!,
 			);
 
-			const newNode: AppNode = {
+			const newNode: Node = {
 				id: uuid(),
 				type: type as unknown as string, // todo provider weird type
 				position,

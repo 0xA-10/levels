@@ -12,17 +12,15 @@ import {
 } from "@xyflow/react";
 import dagre from "dagre";
 
-export type AppNode = Node;
-
 export type AppState = {
 	level: number;
-	nodes: AppNode[];
+	nodes: Node[];
 	edges: Edge[];
-	onNodesChange: OnNodesChange<AppNode>;
+	onNodesChange: OnNodesChange<Node>;
 	onEdgesChange: OnEdgesChange;
 	onConnect: OnConnect;
 	setLevel: (level: number) => void;
-	setNodes: (fn: (nodes: AppNode[]) => AppNode[]) => void;
+	setNodes: (fn: (nodes: Node[]) => Node[]) => void;
 	setEdges: (fn: (edges: Edge[]) => Edge[]) => void;
 	updateNodeLabel: (nodeId: string, label: string) => void;
 	updateNodeSize: (nodeId: string, size: { width: number } | { height: number }) => void;
@@ -42,7 +40,7 @@ const nodeWidth = 172;
 const nodeHeight = 36;
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
-const getLayoutedElements = (nodes: AppNode[], edges: Edge[], direction = "TB") => {
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = "TB") => {
 	const isHorizontal = direction === "LR";
 	dagreGraph.setGraph({ rankdir: direction });
 
