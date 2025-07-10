@@ -2,6 +2,12 @@
 
 levels is a WIP React Flow based editor for quickly creating C4 model diagrams.
 
+
+
+https://github.com/user-attachments/assets/5f57387d-baf1-48ab-bca3-ab07ec23e269
+
+
+
 # Next.js
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
