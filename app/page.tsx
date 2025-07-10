@@ -1,19 +1,9 @@
 "use client";
 
-import { useState, useCallback, useRef, DragEventHandler } from "react";
-import {
-	ReactFlow,
-	ReactFlowProvider,
-	Background,
-	applyNodeChanges,
-	applyEdgeChanges,
-	addEdge,
-	useReactFlow,
-} from "@xyflow/react";
+import { useCallback, useRef, DragEventHandler } from "react";
+import { ReactFlow, ReactFlowProvider, Background, useReactFlow } from "@xyflow/react";
 import { v4 as uuid } from "uuid";
 import { useShallow } from "zustand/react/shallow";
-
-import "@xyflow/react/dist/style.css";
 
 import useStore, { AppNode, AppState } from "./store";
 import Sidebar from "@/components/Sidebar";
@@ -21,19 +11,21 @@ import { DnDProvider, useDnD } from "@/components/DnDContext";
 import BaseNode from "@/components/BaseNode";
 import GroupNode from "@/components/GroupNode";
 
+import "@xyflow/react/dist/style.css";
+
 const nodeTypes = { default: BaseNode, group: GroupNode };
 
-const selector = (state: AppState) => ({
-	level: state.level,
-	nodes: state.nodes,
-	edges: state.edges,
-	onNodesChange: state.onNodesChange,
-	onEdgesChange: state.onEdgesChange,
-	onConnect: state.onConnect,
-});
-
 function DnDFlow() {
-	const { level, nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(useShallow(selector)) as AppState;
+	const { level, nodes, edges, onNodesChange, onEdgesChange, onConnect } = useStore(
+		useShallow((state: AppState) => ({
+			level: state.level,
+			nodes: state.nodes,
+			edges: state.edges,
+			onNodesChange: state.onNodesChange,
+			onEdgesChange: state.onEdgesChange,
+			onConnect: state.onConnect,
+		})),
+	) as AppState;
 	const setLevel = useStore((state) => state.setLevel);
 	const setNodes = useStore((state) => state.setNodes);
 	const setEdges = useStore((state) => state.setEdges);
