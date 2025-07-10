@@ -7,15 +7,9 @@ export default memo(({ data, isConnectable }) => {
 
 	return (
 		<>
-			<Handle
-				type="target"
-				position={Position.Left}
-				onConnect={(params) => console.log("handle onConnect", params)}
-				isConnectable={isConnectable}
-			/>
+			<Handle type="target" position={Position.Left} isConnectable={isConnectable} />
 			<div onMouseEnter={() => setIsTextHovered(true)} onMouseLeave={() => setIsTextHovered(false)}>
-				{isTextHovered && "hovered "}
-				{data.label}
+				{isTextHovered ? <></> : data.label}
 			</div>
 			<Handle type="source" position={Position.Right} isConnectable={isConnectable} />
 		</>
