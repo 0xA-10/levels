@@ -1,14 +1,13 @@
-// @ts-nocheck
 // source: https://reactflow.dev/examples/interaction/drag-and-drop?utm_source=chatgpt.com
 
-import React from "react";
+import React, { DragEvent } from "react";
 import { useDnD } from "./DnDContext";
 
 export default () => {
 	const [_, setType] = useDnD();
 
-	const onDragStart = (event, nodeType) => {
-		setType(nodeType);
+	const onDragStart = (event: DragEvent, nodeType: string) => {
+		setType?.(nodeType);
 		event.dataTransfer.effectAllowed = "move";
 	};
 

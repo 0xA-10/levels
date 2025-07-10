@@ -1,11 +1,10 @@
-// @ts-nocheck
 // source: https://reactflow.dev/examples/interaction/drag-and-drop?utm_source=chatgpt.com
 
-import { createContext, useContext, useState } from "react";
+import { createContext, PropsWithChildren, useContext, useState } from "react";
 
-const DnDContext = createContext([null, (_) => {}]);
+const DnDContext = createContext([null, (_: any) => {}]);
 
-export const DnDProvider = ({ children }) => {
+export const DnDProvider = ({ children }: PropsWithChildren) => {
 	const [type, setType] = useState(null);
 
 	return <DnDContext.Provider value={[type, setType]}>{children}</DnDContext.Provider>;
