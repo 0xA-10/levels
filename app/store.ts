@@ -1,3 +1,4 @@
+import dagre from "dagre";
 import { create } from "zustand";
 import {
 	type Edge,
@@ -10,29 +11,6 @@ import {
 	applyEdgeChanges,
 	Position,
 } from "@xyflow/react";
-import dagre from "dagre";
-
-export type AppState = {
-	level: number;
-	nodes: Node[];
-	edges: Edge[];
-	onNodesChange: OnNodesChange<Node>;
-	onEdgesChange: OnEdgesChange;
-	onConnect: OnConnect;
-	setLevel: (level: number) => void;
-	setNodes: (fn: (nodes: Node[]) => Node[]) => void;
-	setEdges: (fn: (edges: Edge[]) => Edge[]) => void;
-	updateNodeLabel: (nodeId: string, label: string) => void;
-};
-
-export type InitialAppState = Partial<AppState> & Required<Pick<AppState, "level" | "nodes" | "edges">>;
-
-const initialNodes = [
-	{ id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" }, type: "group" },
-	{ id: "n2", position: { x: 0, y: 100 }, data: { label: "Node 2" } },
-	{ id: "n3", position: { x: 0, y: 100 }, data: { label: "Node 3" }, parentId: "n1" },
-];
-const initialEdges = [{ id: "n1-n2", source: "n1", target: "n2" }];
 
 const nodeWidth = 172;
 const nodeHeight = 36;
@@ -65,6 +43,28 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = "TB") => 
 
 	return { nodes, edges };
 };
+
+export type AppState = {
+	level: number;
+	nodes: Node[];
+	edges: Edge[];
+	onNodesChange: OnNodesChange<Node>;
+	onEdgesChange: OnEdgesChange;
+	onConnect: OnConnect;
+	setLevel: (level: number) => void;
+	setNodes: (fn: (nodes: Node[]) => Node[]) => void;
+	setEdges: (fn: (edges: Edge[]) => Edge[]) => void;
+	updateNodeLabel: (nodeId: string, label: string) => void;
+};
+
+export type InitialAppState = Partial<AppState> & Required<Pick<AppState, "level" | "nodes" | "edges">>;
+
+const initialNodes = [
+	{ id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" }, type: "group" },
+	{ id: "n2", position: { x: 0, y: 100 }, data: { label: "Node 2" } },
+	{ id: "n3", position: { x: 0, y: 100 }, data: { label: "Node 3" }, parentId: "n1" },
+];
+const initialEdges = [{ id: "n1-n2", source: "n1", target: "n2" }];
 
 const initialState: InitialAppState = {
 	level: 1,
