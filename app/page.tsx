@@ -56,6 +56,7 @@ function DnDFlow() {
 				y: event.clientY,
 			});
 
+			// todo: choose the correct one on multiple match. e.g. nested scenario or overlaying scenario
 			const nodeDraggedOnTopOf = nodes.find(
 				(n) =>
 					position.x >= n.position.x &&
@@ -103,24 +104,16 @@ function DnDFlow() {
 	const onNodeDragStop: OnNodeDrag<Node> = (event, node) => {
 		event.preventDefault();
 
-		// Already a container node
-		if (node.type === "group") {
-			return;
-		}
-
-		// Already a child node
-		if (node.parentId) {
-			return;
-		}
-
 		const position = screenToFlowPosition({
 			x: event.clientX,
 			y: event.clientY,
 		});
 
+		// todo: choose the correct one on multiple match. e.g. nested scenario or overlaying scenario
 		const nodeDraggedOnTopOf = nodes.find(
 			(n) =>
-				node.id !== n.id &&
+				node.id !== n.id && // self
+				node.parentId !== n.id && // already a child of this node
 				position.x >= n.position.x &&
 				position.x <= n.position.x + n.measured!.width! &&
 				position.y >= n.position.y &&

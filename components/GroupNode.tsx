@@ -7,6 +7,32 @@ import { Button } from "./ui/button";
 
 import useStore from "@/app/store";
 
+function getDescendantIds<Item extends { id: string; parentId?: string }>(items: Item[], targetId: string): string[] {
+	const childrenMap: Record<string, string[]> = {};
+	for (const { id, parentId } of items) {
+		if (parentId != null) {
+			if (!childrenMap[parentId]) childrenMap[parentId] = [];
+			childrenMap[parentId].push(id);
+		}
+	}
+
+	const result: string[] = [];
+	const queue: string[] = [targetId];
+
+	while (queue.length > 0) {
+		const current = queue.shift()!;
+		const kids = childrenMap[current];
+		if (!kids) continue;
+
+		for (const kid of kids) {
+			result.push(kid);
+			queue.push(kid);
+		}
+	}
+
+	return result;
+}
+
 export default memo(({ data, id, isConnectable }: NodeProps) => {
 	const updateNodeLabel = useStore((state) => state.updateNodeLabel);
 	const setNodes = useStore((state) => state.setNodes);
@@ -16,23 +42,21 @@ export default memo(({ data, id, isConnectable }: NodeProps) => {
 	const expandNode = () => {
 		setIsCollasped(false);
 
-		setNodes((nds) =>
-			/**
-			 * Ensure all children of this node are not hidden
-			 */
-			nds.map((n) => (n.parentId === id ? { ...n, hidden: false } : n)),
-		);
+		setNodes((nds) => {
+			const descendantIdMap = new Set(getDescendantIds(nds, id));
+
+			return nds.map((n) => (descendantIdMap.has(n.id) ? { ...n, hidden: false } : n));
+		});
 	};
 
 	const collapseNode = () => {
 		setIsCollasped(true);
 
-		setNodes((nds) =>
-			/**
-			 * Ensure all children of this node are hidden
-			 */
-			nds.map((n) => (n.parentId === id ? { ...n, hidden: true } : n)),
-		);
+		setNodes((nds) => {
+			const descendantIdMap = new Set(getDescendantIds(nds, id));
+
+			return nds.map((n) => (descendantIdMap.has(n.id) ? { ...n, hidden: true } : n));
+		});
 	};
 
 	return (
