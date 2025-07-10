@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, DragEventHandler } from "react";
-import { type Node, ReactFlow, ReactFlowProvider, Background, useReactFlow } from "@xyflow/react";
+import { type Node, ReactFlow, ReactFlowProvider, Background, useReactFlow, OnNodeDrag } from "@xyflow/react";
 import { v4 as uuid } from "uuid";
 import { useShallow } from "zustand/react/shallow";
 
@@ -39,6 +39,9 @@ function DnDFlow() {
 		event.dataTransfer.dropEffect = "move";
 	}, []);
 
+	/**
+	 * Drag and drop a new node from the sidebar
+	 */
 	const onDrop: DragEventHandler<HTMLDivElement> = useCallback(
 		(event) => {
 			event.preventDefault();
@@ -94,12 +97,79 @@ function DnDFlow() {
 		event.dataTransfer!.effectAllowed = "move";
 	}) as unknown as DragEventHandler<HTMLDivElement>;
 
+	/**
+	 * Drag and drop an existing node into another one
+	 */
+	const onNodeDragStop: OnNodeDrag<Node> = (event, node) => {
+		event.preventDefault();
+
+		// Already a container node
+		if (node.type === "group") {
+			return;
+		}
+
+		// Already a child node
+		if (node.parentId) {
+			return;
+		}
+
+		const position = screenToFlowPosition({
+			x: event.clientX,
+			y: event.clientY,
+		});
+
+		const nodeDraggedOnTopOf = nodes.find(
+			(n) =>
+				node.id !== n.id &&
+				position.x >= n.position.x &&
+				position.x <= n.position.x + n.measured!.width! &&
+				position.y >= n.position.y &&
+				position.y <= n.position.y + n.measured!.height!,
+		);
+
+		if (nodeDraggedOnTopOf) {
+			if (nodeDraggedOnTopOf!.type !== "group") {
+				// Ensure a parent node is now of type 'group'
+				setNodes((nds) => nds.map((n) => (n.id === nodeDraggedOnTopOf.id ? { ...n, type: "group" } : n)));
+			}
+
+			setNodes((nds) =>
+				nds.map((n) =>
+					n.id === node.id
+						? {
+								...n,
+								/**
+								 * When we drag on top of another node, place it at the top left of the inside of the parent
+								 * todo: autolayout
+								 */
+								parentId: nodeDraggedOnTopOf!.id,
+								expandParent: true, // the parent node will automatically expand if this node is dragged to the edge of the parent node’s bounds
+								// extent: "parent", // locks movement to inside of parent
+								position: { x: 0, y: 0 },
+						  }
+						: n,
+				),
+			);
+		}
+	};
+
 	return (
 		<>
 			<Sidebar />
 			<div className="reactflow-wrapper w-screen h-screen" ref={reactFlowWrapper}>
 				<ReactFlow
-					{...{ nodes, edges, nodeTypes, onNodesChange, onEdgesChange, onConnect, onDrop, onDragOver, onDragStart }}
+					{...{
+						nodes,
+						edges,
+						nodeTypes,
+						onNodesChange,
+						onEdgesChange,
+						onConnect,
+						onDrop,
+						onDragOver,
+						onDragStart,
+						onNodeDragStop,
+					}}
 					fitView
 					snapToGrid
 					snapGrid={[20, 20]}
