@@ -30,8 +30,9 @@ export type AppState = {
 export type InitialAppState = Partial<AppState> & Required<Pick<AppState, "level" | "nodes" | "edges">>;
 
 const initialNodes = [
-	{ id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" } },
+	{ id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" }, type: "group" },
 	{ id: "n2", position: { x: 0, y: 100 }, data: { label: "Node 2" } },
+	{ id: "n3", position: { x: 0, y: 100 }, data: { label: "Node 3" }, parentId: "n1" },
 ];
 const initialEdges = [{ id: "n1-n2", source: "n1", target: "n2" }];
 

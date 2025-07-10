@@ -21,8 +21,9 @@ import useStore, { AppNode, AppState } from "./store";
 import Sidebar from "@/components/Sidebar";
 import { DnDProvider, useDnD } from "@/components/DnDContext";
 import BaseNode from "@/components/BaseNode";
+import GroupNode from "@/components/GroupNode";
 
-const nodeTypes = { default: BaseNode, group: BaseNode };
+const nodeTypes = { default: BaseNode, group: GroupNode };
 
 const selector = (state: AppState) => ({
 	level: state.level,
