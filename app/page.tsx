@@ -112,6 +112,7 @@ function DnDFlow() {
 					fitView
 					snapToGrid
 					snapGrid={[20, 20]}
+					zoomOnScroll={false}
 				>
 					<Background />
 				</ReactFlow>
