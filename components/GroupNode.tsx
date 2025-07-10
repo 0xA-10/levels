@@ -1,6 +1,5 @@
-// @ts-nocheck
 import { memo, useState } from "react";
-import { Handle, Position } from "@xyflow/react";
+import { Handle, NodeProps, Position } from "@xyflow/react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 import { Input } from "./ui/input";
@@ -8,7 +7,7 @@ import { Button } from "./ui/button";
 
 import useStore from "@/app/store";
 
-export default memo(({ data, id, isConnectable }) => {
+export default memo(({ data, id, isConnectable }: NodeProps) => {
 	const updateNodeLabel = useStore((state) => state.updateNodeLabel);
 	const setNodes = useStore((state) => state.setNodes);
 	const [isTextHovered, setIsTextHovered] = useState(false);
@@ -52,9 +51,13 @@ export default memo(({ data, id, isConnectable }) => {
 			</div>
 			<div onMouseEnter={() => setIsTextHovered(true)} onMouseLeave={() => setIsTextHovered(false)}>
 				{isTextHovered ? (
-					<Input value={data.label} onChange={(evt) => updateNodeLabel(id, evt.target.value)} className="nodrag" />
+					<Input
+						value={data.label as string}
+						onChange={(evt) => updateNodeLabel(id, evt.target.value)}
+						className="nodrag"
+					/>
 				) : (
-					data.label
+					(data.label as string)
 				)}
 			</div>
 			<Handle type="source" position={Position.Right} isConnectable={isConnectable} />
