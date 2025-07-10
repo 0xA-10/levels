@@ -1,3 +1,9 @@
+# levels [wip]
+
+levels is a WIP React Flow based editor for quickly creating C4 model diagrams.
+
+# Next.js
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
