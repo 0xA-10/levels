@@ -23,8 +23,6 @@ export type AppState = {
 	setNodes: (fn: (nodes: Node[]) => Node[]) => void;
 	setEdges: (fn: (edges: Edge[]) => Edge[]) => void;
 	updateNodeLabel: (nodeId: string, label: string) => void;
-	updateNodeSize: (nodeId: string, size: { width: number } | { height: number }) => void;
-	updateNodePosition: (nodeId: string, position: { x: number } | { y: number }) => void;
 };
 
 export type InitialAppState = Partial<AppState> & Required<Pick<AppState, "level" | "nodes" | "edges">>;
@@ -77,67 +75,40 @@ const useStore = create<AppState>((set, get) => ({
 	level: initialState.level,
 	nodes: initialState.nodes,
 	edges: initialState.edges,
+
 	onNodesChange: (changes) => {
 		set({
 			nodes: applyNodeChanges(changes, get().nodes),
 		});
 	},
+
 	onEdgesChange: (changes) => {
 		set({
 			edges: applyEdgeChanges(changes, get().edges),
 		});
 	},
+
 	onConnect: (connection) => {
 		set({
 			edges: addEdge(connection, get().edges),
 		});
 	},
+
 	setLevel: (level) => {
 		set({ level });
 	},
+
 	setNodes: (fn) => {
 		set({ nodes: fn(get().nodes) });
 	},
+
 	setEdges: (fn) => {
 		set({ edges: fn(get().edges) });
 	},
 
 	updateNodeLabel: (nodeId, label) => {
 		set({
-			nodes: get().nodes.map((node) => {
-				if (node.id === nodeId) {
-					// it's important to create a new object here, to inform React Flow about the cahnges
-					return { ...node, data: { ...node.data, label } };
-				}
-
-				return node;
-			}),
-		});
-	},
-
-	updateNodeSize: (nodeId, size) => {
-		set({
-			nodes: get().nodes.map((node) => {
-				if (node.id === nodeId) {
-					// it's important to create a new object here, to inform React Flow about the cahnges
-					return { ...node, measured: { ...node.measured, ...size } };
-				}
-
-				return node;
-			}),
-		});
-	},
-
-	updateNodePosition: (nodeId, position) => {
-		set({
-			nodes: get().nodes.map((node) => {
-				if (node.id === nodeId) {
-					// it's important to create a new object here, to inform React Flow about the cahnges
-					return { ...node, position: { ...node.position, ...position } };
-				}
-
-				return node;
-			}),
+			nodes: get().nodes.map((n) => (n.id === nodeId ? { ...n, data: { ...n.data, label } } : n)),
 		});
 	},
 }));
