@@ -20,7 +20,6 @@ export default memo(({ data, id, isConnectable }: NodeProps) => {
 		setNodes((nds) =>
 			/**
 			 * Expand (show) just the immediate children
-			 * This way we persist any nested collapsed state
 			 */
 			nds.map((n) => (n.parentId === id ? { ...n, hidden: false } : n)),
 		);
