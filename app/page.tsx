@@ -1,8 +1,6 @@
-// @ts-nocheck
-
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, DragEventHandler } from "react";
 import {
 	ReactFlow,
 	ReactFlowProvider,
@@ -44,13 +42,13 @@ function DnDFlow() {
 	const [type, setType] = useDnD();
 	const { screenToFlowPosition } = useReactFlow();
 
-	const onDragOver = useCallback((event) => {
+	const onDragOver = useCallback((event: DragEvent) => {
 		event.preventDefault();
-		event.dataTransfer.dropEffect = "move";
-	}, []);
+		event.dataTransfer!.dropEffect = "move";
+	}, []) as unknown as DragEventHandler<HTMLDivElement>;
 
 	const onDrop = useCallback(
-		(event) => {
+		(event: DragEvent) => {
 			event.preventDefault();
 
 			// check if the dropped element is valid
@@ -66,9 +64,9 @@ function DnDFlow() {
 			const nodeDraggedOnTopOf = nodes.find(
 				(n) =>
 					position.x >= n.position.x &&
-					position.x <= n.position.x + n.measured.width &&
+					position.x <= n.position.x + n.measured!.width! &&
 					position.y >= n.position.y &&
-					position.y <= n.position.y + n.measured.height,
+					position.y <= n.position.y + n.measured!.height!,
 			);
 
 			const newNode: AppNode = {
@@ -96,20 +94,20 @@ function DnDFlow() {
 			setNodes((nds) => nds.concat(newNode));
 		},
 		[screenToFlowPosition, type],
-	);
+	) as unknown as DragEventHandler<HTMLDivElement>;
 
-	const onDragStart = (event, nodeType) => {
-		setType(nodeType);
-		event.dataTransfer.setData("text/plain", nodeType);
-		event.dataTransfer.effectAllowed = "move";
-	};
+	const onDragStart = ((event: DragEvent, nodeType: string) => {
+		setType?.(nodeType);
+		event.dataTransfer!.setData("text/plain", nodeType);
+		event.dataTransfer!.effectAllowed = "move";
+	}) as unknown as DragEventHandler<HTMLDivElement>;
 
 	return (
 		<>
 			<Sidebar />
 			<div className="reactflow-wrapper w-screen h-screen" ref={reactFlowWrapper}>
 				<ReactFlow
-					{...{ nodes, edges, nodeTypes, onNodesChange, onEdgesChange, onConnect, onDrop, onDragOver }}
+					{...{ nodes, edges, nodeTypes, onNodesChange, onEdgesChange, onConnect, onDrop, onDragOver, onDragStart }}
 					fitView
 					snapToGrid
 					snapGrid={[20, 20]}
