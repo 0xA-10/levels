@@ -54,12 +54,34 @@ function DnDFlow() {
 				x: event.clientX,
 				y: event.clientY,
 			});
+
+			const nodeDraggedOnTopOf = nodes.find(
+				(n) =>
+					position.x >= n.position.x &&
+					position.x <= n.position.x + n.measured.width &&
+					position.y >= n.position.y &&
+					position.y <= n.position.y + n.measured.height,
+			);
+
 			const newNode = {
 				id: uuid(),
 				type,
 				position,
 				data: { label: `${type} node` },
+				...(nodeDraggedOnTopOf && {
+					/**
+					 * When we drag on top of another node, place it at the top left of the inside of the parent
+					 * todo: autolayout
+					 */
+					parentId: nodeDraggedOnTopOf!.id,
+					position: { x: 0, y: 0 },
+				}),
 			};
+
+			if (nodeDraggedOnTopOf && nodeDraggedOnTopOf!.type !== "group") {
+				// Ensure a parent node is now of type 'group'
+				setNodes((nds) => nds.map((n) => (n.id === nodeDraggedOnTopOf.id ? { ...n, type: "group" } : n)));
+			}
 
 			setNodes((nds) => nds.concat(newNode));
 		},
