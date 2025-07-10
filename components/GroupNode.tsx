@@ -21,7 +21,7 @@ export default memo(({ data, id, isConnectable }) => {
 			/**
 			 * Ensure all children of this node are not hidden
 			 */
-			nds.map((n) => (n.parentId === id ? { ...n, hidden: true } : n)),
+			nds.map((n) => (n.parentId === id ? { ...n, hidden: false } : n)),
 		);
 	};
 
@@ -32,7 +32,7 @@ export default memo(({ data, id, isConnectable }) => {
 			/**
 			 * Ensure all children of this node are hidden
 			 */
-			nds.map((n) => (n.parentId === id ? { ...n, hidden: false } : n)),
+			nds.map((n) => (n.parentId === id ? { ...n, hidden: true } : n)),
 		);
 	};
 
