@@ -12,38 +12,112 @@ import {
 	Position,
 } from "@xyflow/react";
 import { WithOptional } from "@/lib/utils";
+// Enhanced Dagre auto-layout with support for nested subflows and parent sizing
 
-const nodeWidth = 172;
-const nodeHeight = 36;
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
-const getLayoutedElements = (nodes: Array<WithOptional<Node, "position">>, edges: Array<Edge>, direction = "TB") => {
+interface LayoutNode extends WithOptional<Node, "position"> {
+	// Allow dynamic sizing via style
+	style?: { width?: number; height?: number; [key: string]: any };
+	parentId?: string;
+}
+
+const DEFAULT_NODE_WIDTH = 172;
+const DEFAULT_NODE_HEIGHT = 36;
+
+export function getLayoutedElements(
+	nodes: LayoutNode[],
+	edges: Edge[],
+	direction: "TB" | "LR" = "TB",
+): { nodes: Node[]; edges: Edge[] } {
 	const isHorizontal = direction === "LR";
-	dagreGraph.setGraph({ rankdir: direction });
+	const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
+	// Group children by parentId (null for root)
+	const childMap = new Map<string | null, string[]>();
 	nodes.forEach((node) => {
-		dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+		const parent = node.parentId || null;
+		if (!childMap.has(parent)) childMap.set(parent, []);
+		childMap.get(parent)!.push(node.id);
 	});
 
-	edges.forEach((edge) => {
-		dagreGraph.setEdge(edge.source, edge.target);
-	});
+	// Recursive layout of each group
+	function layoutGroup(parentId: string | null) {
+		const groupIds = childMap.get(parentId) || [];
+		if (!groupIds.length) return;
 
-	dagre.layout(dagreGraph);
+		// First layout nested subflows
+		groupIds.forEach((id) => layoutGroup(id));
 
-	nodes.forEach((node) => {
-		const nodeWithPosition = dagreGraph.node(node.id);
-		node.targetPosition = isHorizontal ? Position.Left : Position.Top;
-		node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
+		// Build a fresh Dagre graph for this group
+		const g = new dagre.graphlib.Graph();
+		g.setDefaultEdgeLabel(() => ({}));
+		g.setGraph({ rankdir: direction });
 
-		node.position = {
-			x: nodeWithPosition.x - nodeWidth / 2,
-			y: nodeWithPosition.y - nodeHeight / 2,
-		};
-	});
+		// Add nodes with their current or default size
+		groupIds.forEach((id) => {
+			const n = nodeMap.get(id)!;
+			const width = n.style?.width ?? DEFAULT_NODE_WIDTH;
+			const height = n.style?.height ?? DEFAULT_NODE_HEIGHT;
+			g.setNode(id, { width, height });
+		});
 
-	return { nodes: nodes as Array<Node>, edges };
-};
+		// Add edges internal to this group
+		edges.forEach((e) => {
+			if (groupIds.includes(e.source) && groupIds.includes(e.target)) {
+				g.setEdge(e.source, e.target);
+			}
+		});
+
+		// Perform Dagre layout
+		dagre.layout(g);
+
+		// Track bounds for children
+		let minX = Infinity,
+			minY = Infinity,
+			maxX = -Infinity,
+			maxY = -Infinity;
+		groupIds.forEach((id) => {
+			const pos = g.node(id);
+			const node = nodeMap.get(id)!;
+			const nodeW = node.style?.width ?? DEFAULT_NODE_WIDTH;
+			const nodeH = node.style?.height ?? DEFAULT_NODE_HEIGHT;
+
+			// Assign position
+			node.position = {
+				x: pos.x - nodeW / 2,
+				y: pos.y - nodeH / 2,
+			};
+			node.targetPosition = isHorizontal ? Position.Left : Position.Top;
+			node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
+
+			// Expand bounding box
+			minX = Math.min(minX, node.position.x);
+			minY = Math.min(minY, node.position.y);
+			maxX = Math.max(maxX, node.position.x + nodeW);
+			maxY = Math.max(maxY, node.position.y + nodeH);
+		});
+
+		if (parentId) {
+			// Resize and position parent to cover children + margin
+			const margin = 20;
+			const parent = nodeMap.get(parentId)!;
+			const width = maxX - minX + margin * 2;
+			const height = maxY - minY + margin * 2;
+
+			parent.style = { ...parent.style, width, height };
+			parent.position = { x: minX - margin, y: minY - margin };
+			parent.targetPosition = isHorizontal ? Position.Left : Position.Top;
+			parent.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
+		}
+	}
+
+	// Start from root group
+	layoutGroup(null);
+
+	return {
+		nodes: nodes as Node[],
+		edges,
+	};
+}
 
 export type AppState = {
 	level: number;
