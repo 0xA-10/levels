@@ -10,6 +10,7 @@ import useStore from "@/app/store";
 export default memo(({ data, id, isConnectable }: NodeProps) => {
 	const updateNodeLabel = useStore((state) => state.updateNodeLabel);
 	const setNodes = useStore((state) => state.setNodes);
+	const edges = useStore((state) => state.edges);
 	const [isTextHovered, setIsTextHovered] = useState(false);
 	// todo: not persisting when hiding this node, move into node props
 	const [isCollapsed, setIsCollasped] = useState(false);
@@ -38,6 +39,36 @@ export default memo(({ data, id, isConnectable }: NodeProps) => {
 		});
 	};
 
+	const focusNode = () => {
+		/**
+		 * Hide everything except this node and its children or anything it's connected to
+		 */
+		setNodes((nds) => {
+			const descendantIdMap = new Set(getDescendantIds(nds, id));
+
+			const shouldShowNode = (nodeId: string) => {
+				// self
+				if (id === nodeId) {
+					return true;
+				}
+
+				// child
+				if (descendantIdMap.has(nodeId)) {
+					return true;
+				}
+
+				// connections
+				if (edges.find((e) => (e.source === nodeId && e.target === id) || (e.source === id && e.target === nodeId))) {
+					return true;
+				}
+
+				return false;
+			};
+
+			return nds.map((n) => (shouldShowNode(n.id) ? n : { ...n, hidden: true }));
+		});
+	};
+
 	return (
 		<>
 			<Handle type="target" position={Position.Left} isConnectable={isConnectable} />
@@ -51,6 +82,9 @@ export default memo(({ data, id, isConnectable }: NodeProps) => {
 						<ChevronUp />
 					</Button>
 				)}
+			</div>
+			<div className="fixed right-0">
+				<Button onClick={focusNode}>Focus</Button>
 			</div>
 			<div onMouseEnter={() => setIsTextHovered(true)} onMouseLeave={() => setIsTextHovered(false)}>
 				{isTextHovered ? (
@@ -69,25 +103,32 @@ export default memo(({ data, id, isConnectable }: NodeProps) => {
 });
 
 function getDescendantIds<Item extends { id: string; parentId?: string }>(items: Item[], targetId: string): string[] {
+	// build parent ⇒ [children] map
 	const childrenMap: Record<string, string[]> = {};
 	for (const { id, parentId } of items) {
-		if (parentId != null) {
-			if (!childrenMap[parentId]) childrenMap[parentId] = [];
-			childrenMap[parentId].push(id);
+		// optional: skip self-parenting
+		if (parentId && parentId !== id) {
+			(childrenMap[parentId] ??= []).push(id);
 		}
 	}
 
 	const result: string[] = [];
-	const queue: string[] = [targetId];
+	const queue = [targetId];
+	const visited = new Set<string>([targetId]); // ← mark the root as “seen”
 
 	while (queue.length > 0) {
 		const current = queue.shift()!;
+
 		const kids = childrenMap[current];
 		if (!kids) continue;
 
 		for (const kid of kids) {
-			result.push(kid);
-			queue.push(kid);
+			// only process each ID once
+			if (!visited.has(kid)) {
+				visited.add(kid);
+				result.push(kid);
+				queue.push(kid);
+			}
 		}
 	}
 
