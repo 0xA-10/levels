@@ -429,21 +429,15 @@ const useStore = create<AppState>((set, get) => ({
 	edges: initialState.edges,
 
 	onNodesChange: (changes) => {
-		set({
-			nodes: applyNodeChanges(changes, get().nodes),
-		});
+		set({ nodes: applyNodeChanges(changes, get().nodes) });
 	},
 
 	onEdgesChange: (changes) => {
-		set({
-			edges: applyEdgeChanges(changes, get().edges),
-		});
+		set({ edges: applyEdgeChanges(changes, get().edges) });
 	},
 
 	onConnect: (connection) => {
-		set({
-			edges: addEdge(connection, get().edges),
-		});
+		set({ edges: addEdge(connection, get().edges) });
 	},
 
 	setLevel: (level) => {
