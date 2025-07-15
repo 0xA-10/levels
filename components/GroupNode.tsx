@@ -10,6 +10,8 @@ import useStore from "@/app/store";
 export default memo(({ data, id, isConnectable }: NodeProps) => {
 	const updateNodeLabel = useStore((state) => state.updateNodeLabel);
 	const setNodes = useStore((state) => state.setNodes);
+	const setEdges = useStore((state) => state.setEdges);
+	const nodes = useStore((state) => state.nodes);
 	const edges = useStore((state) => state.edges);
 	const [isTextHovered, setIsTextHovered] = useState(false);
 	// todo: not persisting when hiding this node, move into node props
@@ -24,6 +26,38 @@ export default memo(({ data, id, isConnectable }: NodeProps) => {
 			 */
 			nds.map((n) => (n.parentId === id ? { ...n, hidden: false } : n)),
 		);
+
+		setEdges((eds) => {
+			const childIds = new Set(nodes.filter((n) => n.parentId === id).map((n) => n.id));
+			const edgesSharedBetweenNodeAndChildren = new Set(
+				eds
+					.filter((e) => {
+						if (e.source === id) {
+							const edgesOfChildrenWithSameTarget = eds.filter(
+								(ex) => childIds.has(ex.source) && ex.target === e.target,
+							);
+
+							return edgesOfChildrenWithSameTarget.length;
+						}
+
+						if (e.target === id) {
+							const edgesOfChildrenWithSameSource = eds.filter(
+								(ex) => childIds.has(ex.target) && ex.source === e.source,
+							);
+
+							return edgesOfChildrenWithSameSource.length;
+						}
+
+						return false;
+					})
+					.map((e) => e.id),
+			);
+
+			/**
+			 * Hide edges shared between this node and its children (implied edges)
+			 */
+			return eds.map((e) => (edgesSharedBetweenNodeAndChildren.has(e.id) ? { ...e, hidden: true } : e));
+		});
 	};
 
 	const collapseNode = () => {
@@ -36,6 +70,38 @@ export default memo(({ data, id, isConnectable }: NodeProps) => {
 			const descendantIdMap = new Set(getDescendantIds(nds, id));
 
 			return nds.map((n) => (descendantIdMap.has(n.id) ? { ...n, hidden: true } : n));
+		});
+
+		setEdges((eds) => {
+			const childIds = new Set(nodes.filter((n) => n.parentId === id).map((n) => n.id));
+			const edgesSharedBetweenNodeAndChildren = new Set(
+				eds
+					.filter((e) => {
+						if (e.source === id) {
+							const edgesOfChildrenWithSameTarget = eds.filter(
+								(ex) => childIds.has(ex.source) && ex.target === e.target,
+							);
+
+							return edgesOfChildrenWithSameTarget.length;
+						}
+
+						if (e.target === id) {
+							const edgesOfChildrenWithSameSource = eds.filter(
+								(ex) => childIds.has(ex.target) && ex.source === e.source,
+							);
+
+							return edgesOfChildrenWithSameSource.length;
+						}
+
+						return false;
+					})
+					.map((e) => e.id),
+			);
+
+			/**
+			 * Show edges shared between this node and its children (implied edges)
+			 */
+			return eds.map((e) => (edgesSharedBetweenNodeAndChildren.has(e.id) ? { ...e, hidden: false } : e));
 		});
 	};
 
