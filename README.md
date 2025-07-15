@@ -3,8 +3,7 @@
 levels is a WIP React Flow based editor for quickly creating C4 model diagrams.
 
 
-
-https://github.com/user-attachments/assets/5f57387d-baf1-48ab-bca3-ab07ec23e269
+https://github.com/user-attachments/assets/33124c23-9e9e-468e-85a8-ad6ad6ecd90d
 
 
 
