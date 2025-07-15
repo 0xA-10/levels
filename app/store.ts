@@ -284,7 +284,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "PersonalBankingCustomer",
 		target: "InternetBankingSystem",
-		data: { label: "Views account balances, and makes payments using" },
+		label: "Views account balances, and makes payments using",
 	},
 
 	{
@@ -292,7 +292,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "InternetBankingSystem",
 		target: "MainframeBankingSystem",
-		data: { label: "Gets account information from, and makes payments using" },
+		label: "Gets account information from, and makes payments using",
 	},
 
 	{
@@ -300,14 +300,14 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "InternetBankingSystem",
 		target: "EmailSystem",
-		data: { label: "Sends e-mail using" },
+		label: "Sends e-mail using",
 	},
 
 	{
 		id: `e${e++}`,
 		source: "EmailSystem",
 		target: "PersonalBankingCustomer",
-		data: { label: "Sends e-mails to" },
+		label: "Sends e-mails to",
 	},
 
 	/**
@@ -318,7 +318,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "WebApplication",
 		target: "SinglePageApplication",
-		data: { label: "Delivers to the customer's web browser" },
+		label: "Delivers to the customer's web browser",
 	},
 
 	{
@@ -326,7 +326,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "SinglePageApplication",
 		target: "ApiApplication",
-		data: { label: "Makes API calls to" },
+		label: "Makes API calls to",
 	},
 
 	{
@@ -334,7 +334,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "MobileApp",
 		target: "ApiApplication",
-		data: { label: "Makes API calls to" },
+		label: "Makes API calls to",
 	},
 
 	{
@@ -342,7 +342,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "ApiApplication",
 		target: "Database",
-		data: { label: "Reads from and writes to" },
+		label: "Reads from and writes to",
 	},
 
 	{
@@ -351,7 +351,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "ApiApplication",
 		target: "MainframeBankingSystem",
-		data: { label: "Makes API calls to" },
+		label: "Makes API calls to",
 	},
 
 	{
@@ -360,7 +360,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "ApiApplication",
 		target: "EmailSystem",
-		data: { label: "Sends e-mail using" },
+		label: "Sends e-mail using",
 	},
 
 	{
@@ -368,7 +368,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "PersonalBankingCustomer",
 		target: "WebApplication",
-		data: { label: "Visits bigbank.com/ib using" },
+		label: "Visits bigbank.com/ib using",
 	},
 
 	{
@@ -376,7 +376,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "PersonalBankingCustomer",
 		target: "SinglePageApplication",
-		data: { label: "Views account balances and makes payments using" },
+		label: "Views account balances and makes payments using",
 	},
 
 	{
@@ -384,7 +384,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "PersonalBankingCustomer",
 		target: "MobileApp",
-		data: { label: "Views account balances and makes payments using" },
+		label: "Views account balances and makes payments using",
 	},
 
 	/**
@@ -395,28 +395,28 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "SignInController",
 		target: "SecurityComponent",
-		data: { label: "Uses" },
+		label: "Uses",
 	},
 
 	{
 		id: `e${e++}`,
 		source: "ResetPasswordController",
 		target: "EmailComponent",
-		data: { label: "Uses" },
+		label: "Uses",
 	},
 
 	{
 		id: `e${e++}`,
 		source: "ResetPasswordController",
 		target: "EmailComponent",
-		data: { label: "Uses" },
+		label: "Uses",
 	},
 
 	{
 		id: `e${e++}`,
 		source: "AccountsSummaryController",
 		target: "MainframeBankingSystemFacade",
-		data: { label: "Uses" },
+		label: "Uses",
 	},
 
 	{
@@ -424,7 +424,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "SecurityComponent",
 		target: "Database",
-		data: { label: "Reads from and writes to" },
+		label: "Reads from and writes to",
 	},
 
 	{
@@ -432,7 +432,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "EmailComponent",
 		target: "EmailSystem",
-		data: { label: "Sends e-mail using" },
+		label: "Sends e-mail using",
 	},
 
 	{
@@ -440,7 +440,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "MainframeBankingSystemFacade",
 		target: "MainframeBankingSystem",
-		data: { label: "Makes API calls to" },
+		label: "Makes API calls to",
 	},
 
 	{
@@ -448,7 +448,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "SinglePageApplication",
 		target: "SignInController",
-		data: { label: "Makes API calls to" },
+		label: "Makes API calls to",
 	},
 
 	{
@@ -456,7 +456,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "MobileApp",
 		target: "SignInController",
-		data: { label: "Makes API calls to" },
+		label: "Makes API calls to",
 	},
 
 	{
@@ -464,7 +464,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "SinglePageApplication",
 		target: "ResetPasswordController",
-		data: { label: "Makes API calls to" },
+		label: "Makes API calls to",
 	},
 
 	{
@@ -472,7 +472,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "MobileApp",
 		target: "ResetPasswordController",
-		data: { label: "Makes API calls to" },
+		label: "Makes API calls to",
 	},
 
 	{
@@ -480,7 +480,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "SinglePageApplication",
 		target: "AccountsSummaryController",
-		data: { label: "Makes API calls to" },
+		label: "Makes API calls to",
 	},
 
 	{
@@ -488,7 +488,7 @@ const initialEdges = [
 		id: `e${e++}`,
 		source: "MobileApp",
 		target: "AccountsSummaryController",
-		data: { label: "Makes API calls to" },
+		label: "Makes API calls to",
 	},
 ];
 
